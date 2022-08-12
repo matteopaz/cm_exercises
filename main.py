@@ -7,10 +7,18 @@ def check_if_symmetric(str):
     secondh = str[len(str) // 2 + 1 :] 
   else:
     secondh = str[len(str) // 2  :]
-  print(firsth, secondh)
   if firsth == secondh[::-1]: 
     return True
   else:
     return False
 
-print(check_if_symmetric("abba"))
+def convert_to_num(str):
+    arr = [None]*len(str)
+    for i in range(len(str)):
+        char = str[i]
+        if(char == " "):
+            arr[i] = 0
+        else:
+            arr[i] = ord(char) - 96
+    return arr
+
