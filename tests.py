@@ -1,4 +1,4 @@
-from main import check_if_symmetric, convert_to_num
+from main import check_if_symmetric, convert_to_num, convert_to_letters, get_intersection, get_union
 
 tests = [
     # {
@@ -11,16 +11,26 @@ tests = [
     #     'input': 'batman',
     #     'output': False
     # }
-    {
-        'function': convert_to_num,
-        'input': "a b c d e f g",
-        'output': [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6]
-    },
-    {
-        'function': convert_to_num,
-        'input': "zZzZzZzZz",
-        'output': [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6]
-    }
+    # {
+    #     'function': convert_to_num,
+    #     'input': "a b c d e f g",
+    #     'output': [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7]
+    # },
+    # {
+    #     'function': convert_to_num,
+    #     'input': "zZz",
+    #     'output': [26,26,26]
+    # },
+  {
+    'function': convert_to_letters,
+    'input': [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7],
+    'output': "a b c d e f g"
+  },
+  # {
+  #   'function': get_union,
+  #   'input': [[1,2,3,4,5],[5,6,7,8,9]],
+  #   'output': "a b c d e f g"
+  # }
 ]
 
 num_successes = 0
