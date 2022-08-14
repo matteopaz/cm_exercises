@@ -52,4 +52,31 @@ def get_union(arr1, arr2):
   newarr.extend(arr2)
   return norepeat(newarr)
 
-# print(get_union([0,1,2,4,5,9],[0,2,7,111]))
+def count_char(string):
+  dictionary = {}
+  string = string.lower()
+  i = 0
+  # for c in string: # get each character once
+  #   dictionary[c] = 1
+  #   # remove first char from new string
+  #   string = string[1:]
+  #   for j in range(len(string)): # find the repeats
+  #     if string[j] == c:
+  #       dictionary[c] += 1
+  #       string = string[:j] + string[j+1:] # cut that index
+  while len(string) > 0:
+    c = string[0]
+    dictionary[c] = 1
+    string = string[1:]
+    ind = string.find(c)
+    while ind != -1:
+      dictionary[c] += 1
+      string = string[:ind] + string[ind+1:]
+      ind = string.find(c)
+  return dictionary
+
+def is_prime(n):
+  for x in range(2, n - 1):
+    if n % (x) == 0:
+      return False
+  return True
