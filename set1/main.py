@@ -1,16 +1,13 @@
 import math
 
 def check_if_symmetric(string):
-  firsth = string[:len(string) // 2]
-  secondh = ""
+  mid = len(string) // 2
+  firsth = string[:mid]
   if len(string) % 2: #If odd
-    secondh = string[len(string) // 2 + 1 :] 
+    secondh = string[mid + 1 :] 
   else:
-    secondh = string[len(string) // 2  :]
-  if firsth == secondh[::-1]: 
-    return True
-  else:
-    return False
+    secondh = string[mid :]
+  return (firsth == secondh[::-1])
 
 def convert_to_num(string):
   string = string.lower()
@@ -59,15 +56,20 @@ def get_union(arr):
 def count_char(string):
   dictionary = {}
   string = string.lower()
-  while len(string) > 0: # As long as there is a string
-    c = string[0] # Get the first char
-    dictionary[c] = 1
-    string = string[1:] # Cut it and add it to dict
-    ind = string.find(c)
-    while ind != -1: # Find the rest and do the same
-      dictionary[c] += 1
-      string = string[:ind] + string[ind+1:]
-      ind = string.find(c)
+  # while len(string) > 0: # As long as there is a string
+  #   c = string[0] # Get the first char
+  #   dictionary[c] = 1
+  #   string = string[1:] # Cut it and add it to dict
+  #   ind = string.find(c)
+  #   while ind != -1: # Find the rest and do the same
+  #     dictionary[c] += 1
+  #     string = string[:ind] + string[ind+1:]
+  #     ind = string.find(c)
+  for i in range(len(string)):
+    char = string[i]
+    if char not in dictionary:
+      dictionary[char] = 0
+    dictionary[char] += 1
   return dictionary
 
 def is_prime(n):
