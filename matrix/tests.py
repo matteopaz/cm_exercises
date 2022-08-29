@@ -14,8 +14,13 @@ def add():
 def transpose():
     m = Matrix(3,3)
     m.setd([1,1,1],1)
+    m.setd([2,2,2],2)
     n = m.transpose()
-    result = [[0,0,1],[0,1,0],[1,0,0]]
+    result = [
+        [1,0,2],
+        [0,2,0],
+        [2,0,1]
+    ]
     print(n.all())
     if n.all() != result:
         print("Failed trans")

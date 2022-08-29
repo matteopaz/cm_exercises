@@ -102,6 +102,13 @@ class Matrix:
                 self.setel(val, i+1, j+1)
         return self
 
+    def set(self, m):
+        if len(m) != self.rows or len(m[0]) != self.cols:
+            raise Exception("Matrix dimension mismatch")
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.setel(m[i][j], i+1, j+1)
+
     # SETTERS OVER
 
     # SCALAR OPERATIONS 
