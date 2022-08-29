@@ -102,12 +102,13 @@ class Matrix:
                 self.setel(val, i+1, j+1)
         return self
 
-    def set(self, m):
+    def setm(self, m):
         if len(m) != self.rows or len(m[0]) != self.cols:
             raise Exception("Matrix dimension mismatch")
         for i in range(self.rows):
             for j in range(self.cols):
                 self.setel(m[i][j], i+1, j+1)
+        return self
 
     # SETTERS OVER
 
@@ -184,6 +185,44 @@ class Matrix:
         self.setc(next, one)
         self.setc(prev, two)
         return self    
+
+    # ROW OPERATIONS END
+
+    # MATRIX DERIVATIVES START
+
+    def submatrix(self, row, col):
+        new = Matrix(self.rows - 1, self.cols - 1)
+        subtract_r = 1
+        for r in range(self.rows):
+            if r == row - 1:
+                subtract_r = 2
+                continue
+            subtract_c = 1
+            for c in range(self.cols):
+                if c == col - 1:
+                    subtract_c = 2
+                    continue
+                new.setel(self.e(r+1, c+1), r - subtract_r, c - subtract_c)
+        return new
+
+    def det(self):        
+        def inner(m):
+            if len(m) == 1 and len(m[0]) == 1:
+                return m[0][0]
+            
+            row = m[0]
+            d = 0
+            for i in range(len(row)):
+                el = row[i]
+                c = (-1)**i
+                tempmatrix = Matrix(len(m), len(row))
+                tempmatrix.setm(m)
+                d += c * el * inner(tempmatrix.submatrix(0, i+1))
+            return d
+        return inner(self.m)
+        
+
+    # MATRIX DERIVATIVES END
     # UTIL
 
     def copy(self):
