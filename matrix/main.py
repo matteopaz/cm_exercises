@@ -1,14 +1,12 @@
 class Matrix:
 
 
-
     def __init__(self, rows, cols, start_elem=0):
         self.m = []
         self.rows = rows
         self.cols = cols
-        self.f = start_elem
         for i in range(self.rows):
-            self.m.append([self.f] *self.cols)
+            self.m.append([start_elem] *self.cols)
 
     def __copy(self, arr):
         new = []
@@ -73,8 +71,9 @@ class Matrix:
             raise Exception("Use a list when setting rows/cols")
         if len(val) != self.rows:
             raise Exception("Set list length not equal to matrix dimension")
-        for row in self.m:
-            row[c - 1] = val
+
+        for r in range(len(self.m)):
+            self.m[r][c - 1] = val[r]
         return self
         
     def setd(self, val, d):
@@ -185,41 +184,48 @@ class Matrix:
         self.setc(next, one)
         self.setc(prev, two)
         return self    
+    
+    def delete_row(self, r):
+        new = Matrix(self.rows - 1, self.cols)
+        current_row = 1
+        for i in range(self.rows):
+            if i + 1 == r:
+                continue
+            new.setr(self.r(i+1), current_row)
+            current_row += 1
+        return new        
+
+    def delete_col(self, c):
+        new = Matrix(self.rows, self.cols - 1)
+        current_col = 1
+        for i in range(self.cols):
+            if i + 1 == c:
+                continue
+            new.setc(self.c(i+1), current_col)
+            current_col += 1
+        return new
 
     # ROW OPERATIONS END
 
     # MATRIX DERIVATIVES START
 
     def submatrix(self, row, col):
-        new = Matrix(self.rows - 1, self.cols - 1)
-        subtract_r = 1
-        for r in range(self.rows):
-            if r == row - 1:
-                subtract_r = 2
-                continue
-            subtract_c = 1
-            for c in range(self.cols):
-                if c == col - 1:
-                    subtract_c = 2
-                    continue
-                new.setel(self.e(r+1, c+1), r - subtract_r, c - subtract_c)
-        return new
+        return self.delete_col(col).delete_row(row)
 
     def det(self):        
-        def inner(m):
-            if len(m) == 1 and len(m[0]) == 1:
-                return m[0][0]
+        def inner(m_matrix):
+            dim = m_matrix.getdim()
+            if dim[0] == 1 and dim[1] == 1:
+                return m_matrix.e(1,1)
             
-            row = m[0]
+            row = m_matrix.r(1)
             d = 0
-            for i in range(len(row)):
+            for i in range(dim[1]):
                 el = row[i]
                 c = (-1)**i
-                tempmatrix = Matrix(len(m), len(row))
-                tempmatrix.setm(m)
-                d += c * el * inner(tempmatrix.submatrix(0, i+1))
+                d += c * el * inner(m_matrix.submatrix(1, i+1))
             return d
-        return inner(self.m)
+        return inner(self.copy())
         
 
     # MATRIX DERIVATIVES END

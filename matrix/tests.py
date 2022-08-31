@@ -13,13 +13,12 @@ def add():
 
 def transpose():
     m = Matrix(3,3)
-    m.setd([1,1,1],1)
-    m.setd([2,2,2],2)
+    m.setr([2,2,2], 1)
     n = m.transpose()
     result = [
-        [1,0,2],
-        [0,2,0],
-        [2,0,1]
+        [2,0,0],
+        [2,0,0],
+        [2,0,0]
     ]
     if n.all() != result:
         print("Failed trans")
@@ -44,10 +43,21 @@ def multiply():
     else:
         print("Success on mult")
 
+def det():
+    m = Matrix(3,3)
+    m.setm([
+        [3,4,1],
+        [9,0,2],
+        [0,1,3]
+    ])
+    result = -105
+    if m.det() != result:
+        print("Failed det")
+        print(m.det())
+    else:
+        print("Success on det")
+
 add()
 transpose()
 multiply()
-
-m = Matrix(2,2)
-m.setd([2,2],1)
-print(m.det())
+det()
