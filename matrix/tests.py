@@ -13,7 +13,7 @@ def add():
 
 def transpose():
     m = Matrix(3,3)
-    m.setr([2,2,2], 1)
+    m.setr([2,2,2], 0)
     n = m.transpose()
     result = [
         [2,0,0],
@@ -28,14 +28,14 @@ def transpose():
 def multiply():
     m = Matrix(3,3)
     m.setd([1,1,1], 1)
-    m.switch_row(3, 2)
+    m.switch_row(2, 1)
     result = [
         [1,2,3],
         [7,8,9],
         [4,5,6]
     ]
     n = Matrix(3, 3)
-    n.setm(result).switch_row(3,2)
+    n.setm(result).switch_row(2,1)
     o = m.matrix_multiply(n)
     if o.all() != result:
         print("Failed mult")

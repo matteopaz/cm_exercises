@@ -2,34 +2,33 @@ class Matrix:
 
 
     def __init__(self, rows, cols, start_elem=0):
-        self.m = []
+        self.raw = []
         self.rows = rows
         self.cols = cols
         for i in range(self.rows):
-            self.m.append([start_elem] *self.cols)
+            self.raw.append([start_elem] *self.cols)
 
     def __copy(self, arr):
         new = []
-        for row in self.m:
+        for row in self.raw:
             new.append(row)
         return new        
     
     # GETTERS START
-    def e(self, r, c):
-        return self.m[r - 1][c - 1]
+    def el(self, r, c):
+        return self.raw[r][c]
 
     def r(self, n):
-        if not n:
-            raise Exception("Rows start from 1")
-        return self.m[n - 1][::1]
+        new = []
+        for c in range(self.cols):
+            new.append(self.el(n, c))
+        return new
     
     def c(self, n):
-        if not n:
-            raise Exception("Cols start from 1")
-        col = []
-        for row in self.m:
-            col.append(row[n - 1])
-        return col
+        new = []
+        for r in range(self.rows):
+            new.append(self.el(r, n))
+        return new
 
     def d(self, n):
         if self.rows != self.cols:
@@ -38,23 +37,26 @@ class Matrix:
         diag = []
         if n == 1:
             for i in range(dim):
-                diag.append(self.m[i][i])
+                diag.append(self.el(i,i))
         if n == 2:
             for i in range(dim):
-                diag.append(self.m[dim - 1 -i][i])
+                diag.append(self.el(dim - 1 - i, i))
         return diag
     
     def getdim(self):
         return [int(self.rows), int(self.cols)]
     
     def all(self):
-        return self.__copy(self.m)
+        new = []
+        for r in range(self.rows):
+            new.append(self.r(r))
+        return new
     
     # GETTERS END
     # SETTERS START
 
     def setel(self, val, r, c):
-        self.m[r - 1][c - 1] = val
+        self.raw[r][c] = val
         return self
 
     
@@ -63,7 +65,7 @@ class Matrix:
             raise Exception("Use a list when setting rows/cols")
         if len(val) != self.cols:
             raise Exception("Set list length not equal to matrix dimension")
-        self.m[r - 1] = val
+        self.raw[r] = val
         return self
 
     def setc(self, val, c):
@@ -72,8 +74,8 @@ class Matrix:
         if len(val) != self.rows:
             raise Exception("Set list length not equal to matrix dimension")
 
-        for r in range(len(self.m)):
-            self.m[r][c - 1] = val[r]
+        for r in range(len(self.raw)):
+            self.raw[r][c] = val[r]
         return self
         
     def setd(self, val, d):
@@ -89,24 +91,24 @@ class Matrix:
 
         if d == 1:
             for i in range(dim):
-                self.m[i][i] = val[i]
+                self.raw[i][i] = val[i]
         if d == 2:
             for i in range(dim):
-                self.m[dim - 1 -i][i] = val[i]
+                self.raw[dim - 1 -i][i] = val[i]
         return self
     
     def fill(self, val):
-        for i in range(self.rows):
-            for j in range(self.cols):
-                self.setel(val, i+1, j+1)
+        for r in range(self.rows):
+            for c in range(self.cols):
+                self.setel(val, r, c)
         return self
 
     def setm(self, m):
         if len(m) != self.rows or len(m[0]) != self.cols:
             raise Exception("Matrix dimension mismatch")
-        for i in range(self.rows):
-            for j in range(self.cols):
-                self.setel(m[i][j], i+1, j+1)
+        for r in range(self.rows):
+            for c in range(self.cols):
+                self.setel(m[r][c], r, c)
         return self
 
     # SETTERS OVER
@@ -115,10 +117,10 @@ class Matrix:
 
     def scalar_multiply(self, n):
         new = Matrix(self.rows, self.cols)
-        for i in range(self.rows):
-            for j in range(self.cols):
-                val = self.e(i + 1, j + 1) * n
-                new.setel(val, i + 1, j + 1)
+        for r in range(self.rows):
+            for c in range(self.cols):
+                val = self.el(r, c) * n
+                new.setel(val, i, j)
         return new
 
     # SCALAR OPERATIONS END
@@ -129,10 +131,10 @@ class Matrix:
         if not isinstance(adder, Matrix):
             raise Exception("Please use matrix of same dimension")
         new = Matrix(self.rows, self.cols)
-        for i in range(self.rows):
-            for j in range(self.cols):
-                val = self.e(i + 1, j + 1) + adder.e(i + 1, j + 1)
-                new.setel(val, i + 1, j + 1)
+        for r in range(self.rows):
+            for c in range(self.cols):
+                val = self.el(r, c) + adder.el(r, c)
+                new.setel(val, r, c)
         return new
     
     def subtract(self, m):
@@ -147,14 +149,14 @@ class Matrix:
             raise Exception("Matrix multiplication incompatible")
 
         new = Matrix(self.rows, multdim[1], 0)
-        for rownum in range(self.rows):
-            row = self.r(rownum + 1)
-            for colnum in range(multdim[1]):
-                multcol = mult.c(colnum + 1)
+        for r in range(self.rows):
+            row = self.r(r)
+            for c in range(multdim[1]):
+                multcol = mult.c(c)
                 val = 0
-                for i in range(self.cols):
-                    val += row[i] * multcol[i]
-                new.setel(val, rownum+1, colnum+1)
+                for el in range(len(row)):
+                    val += row[el] * multcol[el]
+                new.setel(val, r, c)
         return new
     
     # MATRIX ON MATRIX OPERATIONS END
@@ -168,7 +170,7 @@ class Matrix:
         new = Matrix(self.rows, self.cols)
         for r in range(self.rows):
             for c in range(self.cols):
-                new.setel(self.e(r+1,c+1), c+1, r+1)
+                new.setel(self.el(r,c), c, r)
         return new
     
     def switch_row(self, one, two):
@@ -187,21 +189,21 @@ class Matrix:
     
     def delete_row(self, r):
         new = Matrix(self.rows - 1, self.cols)
-        current_row = 1
+        current_row = 0
         for i in range(self.rows):
-            if i + 1 == r:
+            if i == r:
                 continue
-            new.setr(self.r(i+1), current_row)
+            new.setr(self.r(i), current_row)
             current_row += 1
         return new        
 
     def delete_col(self, c):
         new = Matrix(self.rows, self.cols - 1)
-        current_col = 1
+        current_col = 0
         for i in range(self.cols):
-            if i + 1 == c:
+            if i == c:
                 continue
-            new.setc(self.c(i+1), current_col)
+            new.setc(self.c(i), current_col)
             current_col += 1
         return new
 
@@ -216,14 +218,14 @@ class Matrix:
         def inner(m_matrix):
             dim = m_matrix.getdim()
             if dim[0] == 1 and dim[1] == 1:
-                return m_matrix.e(1,1)
+                return m_matrix.el(0,0)
             
             row = m_matrix.r(1)
             d = 0
             for i in range(dim[1]):
                 el = row[i]
                 c = (-1)**i
-                d += c * el * inner(m_matrix.submatrix(1, i+1))
+                d += c * el * inner(m_matrix.submatrix(0, i))
             return d
         return inner(self.copy())
         
@@ -233,16 +235,16 @@ class Matrix:
 
     def copy(self):
         new = Matrix(self.rows, self.cols)
-        for rownum in range(self.rows):
-            for colnum in range(self.cols):
-                new.setel(self.e(rownum+1, colnum+1), rownum+1, colnum+1)
+        for r in range(self.rows):
+            for c in range(self.cols):
+                new.setel(self.el(r, c), r, c)
         return new
     
     def display(self):
         print("\n")
-        for row in self.m:
-            for el in row:
-
+        for r in range(self.rows):
+            for c in range(self.cols):
+                el = self.el(r, c)
                 print(el, end="    ")
             print("\n")
         print("\n")
