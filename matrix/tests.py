@@ -1,51 +1,56 @@
-from main import Matrix
+from matrix import Matrix
 
 def add():
     m = Matrix(2,2)
-    m.setd([1,1],1)
-    n = m.add(Matrix(2,2).setd([1,1],2))
+    m.set_diag([1,1],1)
+    n = m.add(Matrix(2,2).set_diag([1,1],2))
 
     result = [[1,1],[1,1]]
-    if n.all() != result:
+    if n.get_raw() != result:
         print("Failed add")
     else:
         print("Success on add")
 
 def transpose():
     m = Matrix(3,3)
-    m.setr([2,2,2], 0)
+    m.set_row([2,2,2], 0)
+    m.set_row([1,1,1], 1)
+    m.set_row([9,0,9],2)
     n = m.transpose()
     result = [
-        [2,0,0],
-        [2,0,0],
-        [2,0,0]
+        [2,1,9],
+        [2,1,0],
+        [2,1,9]
     ]
-    if n.all() != result:
+    if n.get_raw() != result:
         print("Failed trans")
     else:
         print("Success on trans")
 
 def multiply():
     m = Matrix(3,3)
-    m.setd([1,1,1], 1)
+    m.set_diag([1,1,1], 1)
     m.switch_row(2, 1)
     result = [
-        [1,2,3],
-        [7,8,9],
-        [4,5,6]
+        [1,2,3,4],
+        [9,10,11,12],
+        [5,6,7,8]
     ]
-    n = Matrix(3, 3)
-    n.setm(result).switch_row(2,1)
+    n = Matrix(3, 4)
+    n.set_raw(result).switch_row(2,1)
     o = m.matrix_multiply(n)
-    if o.all() != result:
+    if o.get_raw() != result:
         print("Failed mult")
         o.display()
-    else:
+        return
+    try:
+        n.matrix_multiply(m)
+    except:
         print("Success on mult")
 
 def det():
     m = Matrix(3,3)
-    m.setm([
+    m.set_raw([
         [3,4,1],
         [9,0,2],
         [0,1,3]

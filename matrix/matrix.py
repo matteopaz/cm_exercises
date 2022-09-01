@@ -6,61 +6,56 @@ class Matrix:
         self.rows = rows
         self.cols = cols
         for i in range(self.rows):
-            self.raw.append([start_elem] *self.cols)
-
-    def __copy(self, arr):
-        new = []
-        for row in self.raw:
-            new.append(row)
-        return new        
+            self.raw.append([start_elem] *self.cols)     
     
     # GETTERS START
-    def el(self, r, c):
+    def get_el(self, r, c):
         return self.raw[r][c]
 
-    def r(self, n):
+    def get_row(self, n):
         new = []
         for c in range(self.cols):
-            new.append(self.el(n, c))
+            new.append(self.get_el(n, c))
         return new
     
-    def c(self, n):
+    def get_col(self, n):
         new = []
         for r in range(self.rows):
-            new.append(self.el(r, n))
+            new.append(self.get_el(r, n))
         return new
 
-    def d(self, n):
+    def get_diag(self, diagonal_number=1): 
         if self.rows != self.cols:
             raise Exception("Diagonal not defined for rect matrix") 
         dim = self.rows
         diag = []
-        if n == 1:
+
+        if diagonal_number == 1: # Main
             for i in range(dim):
-                diag.append(self.el(i,i))
-        if n == 2:
+                diag.append(self.get_el(i,i))
+        if diagonal_number == 2: # Other diagonal
             for i in range(dim):
-                diag.append(self.el(dim - 1 - i, i))
+                diag.append(self.get_el(dim - 1 - i, i))
         return diag
     
-    def getdim(self):
+    def get_dim(self):
         return [int(self.rows), int(self.cols)]
     
-    def all(self):
+    def get_raw(self):
         new = []
         for r in range(self.rows):
-            new.append(self.r(r))
+            new.append(self.get_row(r))
         return new
     
     # GETTERS END
     # SETTERS START
 
-    def setel(self, val, r, c):
+    def set_el(self, val, r, c):
         self.raw[r][c] = val
         return self
 
     
-    def setr(self, val, r):
+    def set_row(self, val, r):
         if not isinstance(val, list):
             raise Exception("Use a list when setting rows/cols")
         if len(val) != self.cols:
@@ -68,7 +63,7 @@ class Matrix:
         self.raw[r] = val
         return self
 
-    def setc(self, val, c):
+    def set_col(self, val, c):
         if not isinstance(val, list):
             raise Exception("Use a list when setting rows/cols")
         if len(val) != self.rows:
@@ -78,7 +73,7 @@ class Matrix:
             self.raw[r][c] = val[r]
         return self
         
-    def setd(self, val, d):
+    def set_diag(self, val, diag_n):
         if self.rows != self.cols:
             raise Exception("Diagonal not defined for rect matrix")
 
@@ -89,10 +84,10 @@ class Matrix:
         if len(val) != dim:
             raise Exception("Set list length not equal to matrix dimension")
 
-        if d == 1:
+        if diag_n == 1: # Main
             for i in range(dim):
                 self.raw[i][i] = val[i]
-        if d == 2:
+        if diag_n == 2: # Other diag
             for i in range(dim):
                 self.raw[dim - 1 -i][i] = val[i]
         return self
@@ -100,15 +95,15 @@ class Matrix:
     def fill(self, val):
         for r in range(self.rows):
             for c in range(self.cols):
-                self.setel(val, r, c)
+                self.set_el(val, r, c)
         return self
 
-    def setm(self, m):
+    def set_raw(self, m):
         if len(m) != self.rows or len(m[0]) != self.cols:
             raise Exception("Matrix dimension mismatch")
         for r in range(self.rows):
             for c in range(self.cols):
-                self.setel(m[r][c], r, c)
+                self.set_el(m[r][c], r, c)
         return self
 
     # SETTERS OVER
@@ -119,8 +114,8 @@ class Matrix:
         new = Matrix(self.rows, self.cols)
         for r in range(self.rows):
             for c in range(self.cols):
-                val = self.el(r, c) * n
-                new.setel(val, i, j)
+                val = self.get_el(r, c) * n
+                new.set_el(val, r, c)
         return new
 
     # SCALAR OPERATIONS END
@@ -133,8 +128,8 @@ class Matrix:
         new = Matrix(self.rows, self.cols)
         for r in range(self.rows):
             for c in range(self.cols):
-                val = self.el(r, c) + adder.el(r, c)
-                new.setel(val, r, c)
+                val = self.get_el(r, c) + adder.get_el(r, c)
+                new.set_el(val, r, c)
         return new
     
     def subtract(self, m):
@@ -144,19 +139,19 @@ class Matrix:
         if not isinstance(mult, Matrix):
             raise Exception("Cannot multiply matrix by non matrix type, try scalar_multiply")
 
-        multdim = mult.getdim()
+        multdim = mult.get_dim()
         if self.cols != multdim[0]:
             raise Exception("Matrix multiplication incompatible")
 
         new = Matrix(self.rows, multdim[1], 0)
         for r in range(self.rows):
-            row = self.r(r)
+            row = self.get_row(r)
             for c in range(multdim[1]):
-                multcol = mult.c(c)
+                multcol = mult.get_col(c)
                 val = 0
                 for el in range(len(row)):
                     val += row[el] * multcol[el]
-                new.setel(val, r, c)
+                new.set_el(val, r, c)
         return new
     
     # MATRIX ON MATRIX OPERATIONS END
@@ -170,21 +165,21 @@ class Matrix:
         new = Matrix(self.rows, self.cols)
         for r in range(self.rows):
             for c in range(self.cols):
-                new.setel(self.el(r,c), c, r)
+                new.set_el(self.get_el(r,c), c, r)
         return new
     
-    def switch_row(self, one, two):
-        prev = self.r(one)
-        next = self.r(two)
-        self.setr(next, one)
-        self.setr(prev, two)
+    def switch_row(self, rownum_one, rownum_two):
+        prev = self.get_row(rownum_one)
+        next = self.get_row(rownum_two)
+        self.set_row(next, rownum_one)
+        self.set_row(prev, rownum_two)
         return self
     
-    def switch_col(self, one, two):
-        prev = self.c(one)
-        next = self.c(two)
-        self.setc(next, one)
-        self.setc(prev, two)
+    def switch_col(self, colnum_one, colnum_two):
+        prev = self.get_col(colnum_one)
+        next = self.get_col(colnum_two)
+        self.set_col(next, colnum_one)
+        self.set_col(prev, colnum_two)
         return self    
     
     def delete_row(self, r):
@@ -193,7 +188,7 @@ class Matrix:
         for i in range(self.rows):
             if i == r:
                 continue
-            new.setr(self.r(i), current_row)
+            new.set_row(self.get_row(i), current_row)
             current_row += 1
         return new        
 
@@ -203,7 +198,7 @@ class Matrix:
         for i in range(self.cols):
             if i == c:
                 continue
-            new.setc(self.c(i), current_col)
+            new.set_col(self.get_col(i), current_col)
             current_col += 1
         return new
 
@@ -211,24 +206,24 @@ class Matrix:
 
     # MATRIX DERIVATIVES START
 
-    def submatrix(self, row, col):
+    def get_submatrix(self, row, col):
         return self.delete_col(col).delete_row(row)
 
     def det(self):        
-        def inner(m_matrix):
-            dim = m_matrix.getdim()
-            if dim[0] == 1 and dim[1] == 1:
-                return m_matrix.el(0,0)
-            
-            row = m_matrix.r(1)
-            d = 0
-            for i in range(dim[1]):
-                el = row[i]
-                c = (-1)**i
-                d += c * el * inner(m_matrix.submatrix(0, i))
-            return d
-        return inner(self.copy())
+        return self.__recursive_determinant(self.copy())
+
+    def __recursive_determinant(self, m_matrix):
+        dim = m_matrix.get_dim()
+        if dim[0] == 1 and dim[1] == 1:
+            return m_matrix.get_el(0,0)
         
+        row = m_matrix.get_row(0)
+        d = 0
+        for i in range(dim[1]):
+            el = row[i]
+            c = (-1)**i
+            d += c * el * self.__recursive_determinant(m_matrix.get_submatrix(0, i))
+        return d        
 
     # MATRIX DERIVATIVES END
     # UTIL
@@ -237,20 +232,18 @@ class Matrix:
         new = Matrix(self.rows, self.cols)
         for r in range(self.rows):
             for c in range(self.cols):
-                new.setel(self.el(r, c), r, c)
+                new.set_el(self.get_el(r, c), r, c)
         return new
     
     def display(self):
         print("\n")
         for r in range(self.rows):
             for c in range(self.cols):
-                el = self.el(r, c)
-                print(el, end="    ")
+                el = self.get_el(r, c)
+                print(el, end= "    ")
             print("\n")
         print("\n")
         print("-")
-        return self.all()
+        return self
     
-
-mone = Matrix(3,3)
 
