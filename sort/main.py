@@ -1,3 +1,45 @@
+def merge(arr1, arr2):
+    sorted = []
+    i = 0
+    j = 0
+    while i < len(arr1) and j < len(arr2):
+        if arr1[i] < arr2[j]:
+            sorted.append(arr1[i])
+            i += 1
+        else:
+            sorted.append(arr2[j])
+            j += 1
+    while i < len(arr1):
+        sorted.append(arr1[i])
+        i += 1
+    while j < len(arr2):
+        sorted.append(arr2[j])
+        j += 1
+    return sorted
+
+def merge_sort(array):
+    if len(array) == 1:
+        return array
+    mid = len(array)//2
+    left = merge_sort(array[:mid])
+    right = merge_sort(array[mid:])
+    print(merge(left, right))
+    return merge(left, right)
+
+def quick_sort(array):
+    arr = copy(array)
+    if len(arr) <= 1:
+        return arr
+    pivot = arr.pop()
+    left = []
+    right = []
+    for e in arr:
+        if e < pivot:
+            left.append(e)
+        else:
+            right.append(e)
+    return quick_sort(left) + [pivot] + quick_sort(right)
+
 def copy(arr):
     new = []
     for e in arr:
@@ -66,3 +108,5 @@ print("Selection Sort: ", selection_sort(array))
 print("Bubble Sort:    ", bubble_sort(array))
 print("Insertion Sort: ", insertion_sort(array))
 print("Counting Sort:  ", counting_sort(array))
+print("Merge Sort:     ", merge_sort(array))
+print("Quick Sort:     ", quick_sort(array))
