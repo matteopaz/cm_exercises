@@ -81,7 +81,7 @@ def rref():
         print("Success on rref")
 
 def inverse():
-    success = True
+    success = False
 
     m = Matrix(3,3)
     m.set_raw([
@@ -90,17 +90,28 @@ def inverse():
         [7,7,7]
     ])
 
-    print(m.det())
-
+    try:
+        m.inverse()
+    except:
+        success = True
+    if not success:
+        print("Inverse: Failed to recognize singular matrix")
+        return
+    
     m = Matrix(3,3)
     m.set_raw([
-        [1,2,3],
-        [2,4,6],
-        [3,6,9]
+        [7,1,2],
+        [3,5,2],
+        [19,9,3]
     ])
-    if m.inverse().get_raw() != result:
+    result = [
+        [1,0,0],
+        [0,1,0],
+        [0,0,1]
+    ]
+    if m.inverse().matrix_multiply(m).get_raw() != result:
         print("Failed inverse")
-        m.inverse().display()
+        m.inverse().matrix_multiply(m).display()
     else:
         print("Success on inverse")
 
@@ -116,21 +127,35 @@ def rrefdet():
         print("Failed rrefdet")
         print(m.rref_det())
         print(m.det())
+        m = Matrix(3,3)
+    m.set_raw([
+        [8,19,3],
+        [4,10,7],
+        [8,19,3]
+    ])
+    if abs(m.rref_det() - m.det()) > 0.0000000000001:
+        print("Failed rrefdet")
+        print(m.rref_det())
+        print(m.det())
+    else:
+        print("Success on rrefdet")
+    
 
     
 rref()
-inverse()
 rrefdet()
+inverse()
 add()
 transpose()
 multiply()
 det()
 
-m = Matrix(3,3)
-m.set_raw([
-    [2,8,3],
-    [4,5,6],
-    [7,8,9]
-])
-# m.matrix_multiply(m.inverse()).display()
-
+# co = Matrix(3,3)
+# co.set_raw([
+#     [1,4,0],
+#     [-3,0,2],
+#     [0,-6,0]
+# ])
+# sol = Matrix(3,1)
+# sol.set_col([6,-2,6],0)
+# co.inverse().matrix_multiply(sol).display()

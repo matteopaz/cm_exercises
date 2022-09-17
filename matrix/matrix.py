@@ -155,6 +155,7 @@ class Matrix:
                 for el in range(len(row)):
                     val += row[el] * multcol[el]
                 new.set_el(val, r, c)
+        new.__clean_zeroes()
         return new
     
     # MATRIX ON MATRIX OPERATIONS END
@@ -261,29 +262,33 @@ class Matrix:
         newMatrix = self.copy()
         dim = newMatrix.get_dim()
         row_index = 0
+
         for cnum in range(dim[1]):
-            col = newMatrix.get_col(cnum)[row_index:]
+            col = newMatrix.get_col(cnum)[row_index:] # only consider rows below current
             piv_row_num = newMatrix.get_pivot_row(col)
 
-            if piv_row_num != -1:
-                piv_row_num += row_index 
-                # If there is a valid pivot row, then this shifts it back since get_pivot_row was considering all below the current row index
+            if piv_row_num != -1: #if pivot row exists
+                piv_row_num += row_index # get absolute row number, since we only considered rows below current
                 if piv_row_num != row_index:
                     newMatrix.switch_row(piv_row_num, row_index)
                 
-                newMatrix.set_row(newMatrix.array_reduce_row(newMatrix.get_row(piv_row_num)), piv_row_num) # Turn leading entry to 1
+                newMatrix.set_row(newMatrix.array_reduce_row(newMatrix.get_row(piv_row_num)), piv_row_num) # Reduce pivot row in place
 
-                piv_row = newMatrix.get_row(piv_row_num)
+                piv_row = newMatrix.get_row(piv_row_num) # new reduced pivot row
+
                 for r in range(dim[0]):
                     if r == piv_row_num:
                         continue
-                    col = newMatrix.get_col(cnum)
-                    leading_num = newMatrix.get_el(r, cnum)
+
+                    col = newMatrix.get_col(cnum) # update column to current state
+
+                    leading_num = col[r] # leading number in row to be reduced
                     if leading_num != 0:
                         selected_row = newMatrix.get_row(r)
-                        adder = newMatrix.array_multiple(-leading_num, piv_row)
-                        new_row = newMatrix.array_add(selected_row, adder)
-                        newMatrix.set_row(new_row, r)
+                        reducer = newMatrix.array_multiple(-leading_num, piv_row)
+
+                        reduced_row = newMatrix.array_add(selected_row, reducer)
+                        newMatrix.set_row(reduced_row, r)
                 row_index += 1
         newMatrix.__clean_zeroes()
         return newMatrix
@@ -291,7 +296,7 @@ class Matrix:
     def inverse(self):
         if self.rows != self.cols:
             raise Exception("Inverse not defined for non square matrix")
-        if self.rref_det() == 0:
+        if self.det() == 0:
             raise Exception("Inverse not defined for singular matrix")
         
         id = Matrix(self.rows, self.cols).set_diag([1]*self.rows, 1)
@@ -311,7 +316,7 @@ class Matrix:
     
     def rref_det(self):
         determinant = 1
-
+        mults = []
 
         newMatrix = self.copy()
         dim = newMatrix.get_dim()
@@ -329,7 +334,7 @@ class Matrix:
                 
                 for e in newMatrix.get_row(piv_row_num):
                     if e != 0:
-                        determinant *= 1 / e
+                        mults.append(e)
                         break
 
 
@@ -347,7 +352,12 @@ class Matrix:
                         new_row = newMatrix.array_add(selected_row, adder)
                         newMatrix.set_row(new_row, r)
                 row_index += 1
-        return (1/determinant) 
+        
+        for mult in mults:
+            determinant *= mult
+        if newMatrix.get_diag() != [1]*newMatrix.rows:
+            determinant = 0
+        return determinant 
     # MATRIX DERIVATIVES END
     # UTIL
 
