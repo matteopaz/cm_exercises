@@ -1,3 +1,6 @@
+from select import select
+
+
 class Matrix:
 
 
@@ -223,10 +226,136 @@ class Matrix:
             el = row[i]
             c = (-1)**i
             d += c * el * self.__recursive_determinant(m_matrix.get_submatrix(0, i))
-        return d        
+        return d
+    
+    def get_pivot_row(self, col):
+        for i in range(len(col)):
+            if col[i] != 0:
+                return i
+        return -1
+    
+    def array_reduce_row(self, arr):
+        factor = 1
+        for e in arr:
+            if e != 0:
+                factor = e
+                break
+        new = []
+        for e in arr:
+            new.append(e / factor)
+        return new
+    
+    def array_multiple(self, n, arr):
+        new = []
+        for e in arr:
+            new.append(e*n)
+        return new
+    
+    def array_add(self, arr1, arr2):
+        new = []
+        for i in range(len(arr1)):
+            new.append(arr1[i] + arr2[i])
+        return new
+    
+    def rref(self):
+        newMatrix = self.copy()
+        dim = newMatrix.get_dim()
+        row_index = 0
+        for cnum in range(dim[1]):
+            col = newMatrix.get_col(cnum)[row_index:]
+            piv_row_num = newMatrix.get_pivot_row(col)
 
+            if piv_row_num != -1:
+                piv_row_num += row_index 
+                # If there is a valid pivot row, then this shifts it back since get_pivot_row was considering all below the current row index
+                if piv_row_num != row_index:
+                    newMatrix.switch_row(piv_row_num, row_index)
+                
+                newMatrix.set_row(newMatrix.array_reduce_row(newMatrix.get_row(piv_row_num)), piv_row_num) # Turn leading entry to 1
+
+                piv_row = newMatrix.get_row(piv_row_num)
+                for r in range(dim[0]):
+                    if r == piv_row_num:
+                        continue
+                    col = newMatrix.get_col(cnum)
+                    leading_num = newMatrix.get_el(r, cnum)
+                    if leading_num != 0:
+                        selected_row = newMatrix.get_row(r)
+                        adder = newMatrix.array_multiple(-leading_num, piv_row)
+                        new_row = newMatrix.array_add(selected_row, adder)
+                        newMatrix.set_row(new_row, r)
+                row_index += 1
+        newMatrix.__clean_zeroes()
+        return newMatrix
+
+    def inverse(self):
+        if self.rows != self.cols:
+            raise Exception("Inverse not defined for non square matrix")
+        if self.rref_det() == 0:
+            raise Exception("Inverse not defined for singular matrix")
+        
+        id = Matrix(self.rows, self.cols).set_diag([1]*self.rows, 1)
+        new = self.copy()
+
+        aug = Matrix(self.rows, 2*self.cols)
+        for r in range(self.rows):
+            aug.set_row(new.get_row(r) + id.get_row(r), r)
+        
+        aug = aug.rref()
+
+        new = Matrix(self.rows, self.cols)
+        for r in range(self.rows):
+            new.set_row(aug.get_row(r)[self.cols:], r)
+        new.__clean_zeroes()
+        return new
+    
+    def rref_det(self):
+        determinant = 1
+
+
+        newMatrix = self.copy()
+        dim = newMatrix.get_dim()
+        row_index = 0
+        for cnum in range(dim[1]):
+            col = newMatrix.get_col(cnum)[row_index:]
+            piv_row_num = newMatrix.get_pivot_row(col)
+
+            if piv_row_num != -1:
+                piv_row_num += row_index 
+                # If there is a valid pivot row, then this shifts it back since get_pivot_row was considering all below the current row index
+                if piv_row_num != row_index:
+                    newMatrix.switch_row(piv_row_num, row_index)
+                    determinant *= -1
+                
+                for e in newMatrix.get_row(piv_row_num):
+                    if e != 0:
+                        determinant *= 1 / e
+                        break
+
+
+                newMatrix.set_row(newMatrix.array_reduce_row(newMatrix.get_row(piv_row_num)), piv_row_num) # Turn leading entry to 1
+
+                piv_row = newMatrix.get_row(piv_row_num)
+                for r in range(dim[0]):
+                    if r == piv_row_num:
+                        continue
+                    col = newMatrix.get_col(cnum)
+                    leading_num = newMatrix.get_el(r, cnum)
+                    if leading_num != 0:
+                        selected_row = newMatrix.get_row(r)
+                        adder = newMatrix.array_multiple(-leading_num, piv_row)
+                        new_row = newMatrix.array_add(selected_row, adder)
+                        newMatrix.set_row(new_row, r)
+                row_index += 1
+        return (1/determinant) 
     # MATRIX DERIVATIVES END
     # UTIL
+
+    def __clean_zeroes(self):
+        for r in range(self.rows):
+            for c in range(self.cols):
+                if self.get_el(r,c) < 0.0000001 and self.get_el(r,c) > -0.0000001:
+                    self.set_el(0.0, r,c)
 
     def copy(self):
         new = Matrix(self.rows, self.cols)

@@ -62,7 +62,75 @@ def det():
     else:
         print("Success on det")
 
+def rref():
+    m = Matrix(3,3)
+    m.set_raw([
+        [7,3,35],
+        [1,9,5],
+        [2,2,10]
+    ])
+    result = [
+        [1,0,5],
+        [0,1,0],
+        [0,0,0]
+    ]
+    if m.rref().get_raw() != result:
+        print("Failed rref")
+        m.rref().display()
+    else:
+        print("Success on rref")
+
+def inverse():
+    success = True
+
+    m = Matrix(3,3)
+    m.set_raw([
+        [1,2,3],
+        [2,4,6],
+        [7,7,7]
+    ])
+
+    print(m.det())
+
+    m = Matrix(3,3)
+    m.set_raw([
+        [1,2,3],
+        [2,4,6],
+        [3,6,9]
+    ])
+    if m.inverse().get_raw() != result:
+        print("Failed inverse")
+        m.inverse().display()
+    else:
+        print("Success on inverse")
+
+def rrefdet():
+    m = Matrix(3,3)
+    m.set_raw([
+        [8,19,3],
+        [4,10,7],
+        [6,3,12]
+    ])
+    # compare Matrix.rref_det() to Matrix.det() within reasonable error
+    if abs(m.rref_det() - m.det()) > 0.0000000000001:
+        print("Failed rrefdet")
+        print(m.rref_det())
+        print(m.det())
+
+    
+rref()
+inverse()
+rrefdet()
 add()
 transpose()
 multiply()
 det()
+
+m = Matrix(3,3)
+m.set_raw([
+    [2,8,3],
+    [4,5,6],
+    [7,8,9]
+])
+# m.matrix_multiply(m.inverse()).display()
+
