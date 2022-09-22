@@ -55,10 +55,18 @@ def det():
         [9,0,2],
         [0,1,3]
     ])
+    n = Matrix(3,3)
+    n.set_raw([
+        [1,0,0],
+        [2,5,5],
+        [9,11,11]
+    ])
+    resultn = 0
     result = -105
-    if m.det() != result:
+    if m.det() != result or n.det() != resultn:
         print("Failed det")
         print(m.det())
+        print(n.det())
     else:
         print("Success on det")
 
@@ -74,11 +82,25 @@ def rref():
         [0,1,0],
         [0,0,0]
     ]
+    # give another case for rect matrix
+    n = Matrix(3,4)
+    n.set_raw([
+        [1,2,3,4],
+        [9,10,11,12],
+        [5,6,7,8]
+    ])
+    resultn = [
+        [1,0,0,0],
+        [0,1,0,0],
+        [0,0,1,0]
+    ]
     if m.rref().get_raw() != result:
         print("Failed rref")
         m.rref().display()
     else:
         print("Success on rref")
+
+
 
 def inverse():
     success = False
@@ -122,6 +144,14 @@ def rrefdet():
         [4,10,7],
         [6,3,12]
     ])
+    n = Matrix(3,3)
+    n.set_raw([
+        [1,0,0],
+        [4,5,6],
+        [7,5,6]
+    ])
+    if abs(m.rref_det() - m.det()) > 0.00000000001:
+        print("Failed rrefdet")
     # compare Matrix.rref_det() to Matrix.det() within reasonable error
     if abs(m.rref_det() - m.det()) > 0.0000000000001:
         print("Failed rrefdet")
@@ -150,12 +180,10 @@ transpose()
 multiply()
 det()
 
-# co = Matrix(3,3)
-# co.set_raw([
-#     [1,4,0],
-#     [-3,0,2],
-#     [0,-6,0]
-# ])
-# sol = Matrix(3,1)
-# sol.set_col([6,-2,6],0)
-# co.inverse().matrix_multiply(sol).display()
+s = Matrix(3,4).set_raw([
+    [1,0,0,-2],
+    [0,1,3,0],
+    [0,0,0,0]
+])
+
+print(s.ker())

@@ -1,3 +1,4 @@
+from ast import IsNot
 from select import select
 
 
@@ -229,9 +230,9 @@ class Matrix:
             d += c * el * self.__recursive_determinant(m_matrix.get_submatrix(0, i))
         return d
     
-    def get_pivot_row(self, col):
-        for i in range(len(col)):
-            if col[i] != 0:
+    def get_pivot_element(self, arr):
+        for i in range(len(arr)):
+            if arr[i] != 0:
                 return i
         return -1
     
@@ -265,14 +266,16 @@ class Matrix:
 
         for cnum in range(dim[1]):
             col = newMatrix.get_col(cnum)[row_index:] # only consider rows below current
-            piv_row_num = newMatrix.get_pivot_row(col)
+            piv_row_num = newMatrix.get_pivot_element(col)
 
             if piv_row_num != -1: #if pivot row exists
                 piv_row_num += row_index # get absolute row number, since we only considered rows below current
                 if piv_row_num != row_index:
                     newMatrix.switch_row(piv_row_num, row_index)
-                
-                newMatrix.set_row(newMatrix.array_reduce_row(newMatrix.get_row(piv_row_num)), piv_row_num) # Reduce pivot row in place
+
+                piv_row = newMatrix.get_row(piv_row_num)
+                reduced_row = newMatrix.array_reduce_row(piv_row)
+                newMatrix.set_row(reduced_row, piv_row_num) # Reduce pivot row in place
 
                 piv_row = newMatrix.get_row(piv_row_num) # new reduced pivot row
 
@@ -323,11 +326,11 @@ class Matrix:
         row_index = 0
         for cnum in range(dim[1]):
             col = newMatrix.get_col(cnum)[row_index:]
-            piv_row_num = newMatrix.get_pivot_row(col)
+            piv_row_num = newMatrix.get_pivot_element(col)
 
             if piv_row_num != -1:
                 piv_row_num += row_index 
-                # If there is a valid pivot row, then this shifts it back since get_pivot_row was considering all below the current row index
+                # If there is a valid pivot row, then this shifts it back since get_pivot_element was considering all below the current row index
                 if piv_row_num != row_index:
                     newMatrix.switch_row(piv_row_num, row_index)
                     determinant *= -1
@@ -358,7 +361,70 @@ class Matrix:
         if newMatrix.get_diag() != [1]*newMatrix.rows:
             determinant = 0
         return determinant 
+    
+    def pseudoinverse(self):
+        t = self.transpose()
+        return ((t.matrix_multiply(self)).inverse()).matrix_multiply(t) # (X^T * X)^-1 * X^T
+
+    def rank(self):
+        rows = self.get_raw()
+        rank = 0
+        for row in rows:
+            if row != [0]*self.cols:
+                rank += 1
+        return rank
+    
+    def nullity(self):
+        return self.cols - self.rank()
+    
+    def ker(self):
+        basis = []
+        for n in range(self.nullity()):
+            basis.append([None]*self.cols)
+        free_vars = []
+        rref = self.rref()
+        current_pivot_row = -1
+        for c in range(rref.cols):
+            selected_piv_row = rref.get_pivot_element(rref.get_col(c))
+            if selected_piv_row <= current_pivot_row:
+                free_vars.append(c)
+            else:
+                current_pivot_row = selected_piv_row
+            
+        for free_var_num in range(len(free_vars)): # For each free var column
+            free_var = free_vars[free_var_num]
+            free_col = rref.get_col(free_var)
+            for j in range(len(free_col)): # Go down it
+                row = rref.get_row(j)
+                row_variable = rref.get_pivot_element(row) # Look at what variable the row represents
+                basis[free_var_num][row_variable] = -rref.get_el(j, free_var) # Add the negative of the selected el in the basis
+        for i in range(len(free_vars)):
+            basis[i][free_vars[i]] = 1 # Set x_n = x_n for free x_n 
+        for i in range(len(basis)):
+            for j in range(len(basis[i])):
+                if basis[i][j] is None:
+                    basis[i][j] = 0
+        return basis
+
+    def colspace(self):
+        basis = []
+        rref = self.rref()
+        for i in range(rref.cols):
+            basis.append(rref.get_col(i))
+        return basis
+    
+    def is_in_span(self, span):
+        
+
+
+                
+
+                    
+
+
     # MATRIX DERIVATIVES END
+        
+        
     # UTIL
 
     def __clean_zeroes(self):
