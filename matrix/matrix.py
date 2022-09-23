@@ -278,7 +278,7 @@ class Matrix:
                 newMatrix.set_row(reduced_row, piv_row_num) # Reduce pivot row in place
 
                 piv_row = newMatrix.get_row(piv_row_num) # new reduced pivot row
-
+    
                 for r in range(dim[0]):
                     if r == piv_row_num:
                         continue
@@ -367,7 +367,7 @@ class Matrix:
         return ((t.matrix_multiply(self)).inverse()).matrix_multiply(t) # (X^T * X)^-1 * X^T
 
     def rank(self):
-        rows = self.get_raw()
+        rows = self.rref().get_raw()
         rank = 0
         for row in rows:
             if row != [0]*self.cols:
@@ -413,13 +413,55 @@ class Matrix:
             basis.append(rref.get_col(i))
         return basis
     
-    def is_in_span(self, span):
+    def is_in_span(self, vector, span):
+        coefficient_cols = len(span)
+        m = Matrix(len(span[0]), coefficient_cols+1)
+        for i in range(coefficient_cols):
+            m.set_col(span[i],i)
+        m.set_col(vector, coefficient_cols) #last
+
+        newMatrix = m
+
+        # TRANSPLANTED CODE FROM RREF, just changed to not consider augmented column
+        dim = newMatrix.get_dim()
+        row_index = 0
+        for cnum in range(dim[1])[:-1]: 
+            col = newMatrix.get_col(cnum)[row_index:] # only consider rows below current
+            piv_row_num = newMatrix.get_pivot_element(col)
+
+            if piv_row_num != -1: #if pivot row exists
+                piv_row_num += row_index # get absolute row number, since we only considered rows below current
+                if piv_row_num != row_index:
+                    newMatrix.switch_row(piv_row_num, row_index)
+
+                piv_row = newMatrix.get_row(piv_row_num)
+                reduced_row = newMatrix.array_reduce_row(piv_row)
+                newMatrix.set_row(reduced_row, piv_row_num) # Reduce pivot row in place
+
+                piv_row = newMatrix.get_row(piv_row_num) # new reduced pivot row
+    
+                for r in range(dim[0]):
+                    if r == piv_row_num:
+                        continue
+
+                    col = newMatrix.get_col(cnum) # update column to current state
+
+                    leading_num = col[r] # leading number in row to be reduced
+                    if leading_num != 0:
+                        selected_row = newMatrix.get_row(r)
+                        reducer = newMatrix.array_multiple(-leading_num, piv_row)
+
+                        reduced_row = newMatrix.array_add(selected_row, reducer)
+                        newMatrix.set_row(reduced_row, r)
+                row_index += 1
         
+        rref = newMatrix
 
-
-                
-
-                    
+        for r in range(rref.get_dim()[0]):
+            row = rref.get_row(r)
+            if row[:-1] == [0]*len(row[:-1]) and row[-1] != 0: # Inconsistent row
+                return False
+        return True
 
 
     # MATRIX DERIVATIVES END

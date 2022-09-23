@@ -181,9 +181,13 @@ multiply()
 det()
 
 s = Matrix(3,4).set_raw([
-    [1,0,0,-2],
-    [0,1,3,0],
-    [0,0,0,0]
+    [4,-3,-9,-8],
+    [0,5,15,0],
+    [-8,11,33,16]
 ])
 
-print(s.ker())
+s.display()
+basis = s.ker()
+print(basis)
+print("Is in span?:", s.is_in_span(Matrix.array_multiple([2,6,-2,1], basis))
+
