@@ -165,9 +165,7 @@ class Matrix:
     # ROW OPERATIONS START
 
     def transpose(self):
-        if self.rows != self.cols:
-            raise Exception("Diagonal not defined for rect matrix")
-        new = Matrix(self.rows, self.cols)
+        new = Matrix(self.cols, self.rows)
         for r in range(self.rows):
             for c in range(self.cols):
                 new.set_el(self.get_el(r,c), c, r)

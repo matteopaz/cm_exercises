@@ -180,14 +180,12 @@ transpose()
 multiply()
 det()
 
-s = Matrix(3,4).set_raw([
-    [4,-3,-9,-8],
-    [0,5,15,0],
-    [-8,11,33,16]
+s = Matrix(4,7).set_raw([
+    [1, 0, 4, -2, 3, 0, -2],
+    [1, -1, 1, -4, 5, 0, -8],
+    [0, -1, -3, -3, 2, 1, -8],
+    [-1, 2, 2, 7, -7, -1, 16]
 ])
 
-s.display()
-basis = s.ker()
-print(basis)
-print("Is in span?:", s.is_in_span(Matrix.array_multiple([2,6,-2,1], basis))
+s.rref().display()
 
