@@ -1,3 +1,7 @@
+from ast import IsNot
+from select import select
+
+
 class Matrix:
 
 
@@ -462,6 +466,14 @@ class Matrix:
         
         
     # UTIL
+
+    def index(self, item):
+        indices = []
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.get_el(i,j) == item:
+                    indices.append((i,j))
+        return indices
 
     def __clean_zeroes(self):
         for r in range(self.rows):
