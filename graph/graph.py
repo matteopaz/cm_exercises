@@ -56,8 +56,6 @@ class Node:
     def getparents(self):
         return list(self.parents.copy())
 
-         
-    
     
 
 class Graph:
@@ -150,31 +148,116 @@ class Graph:
         current_node = self.nodes[end]
         prev = current_node.previous
         while prev != origin:
-            if not prev:
+            if prev == None:
                 return False
             path.append(prev)
             current_node = self.nodes[prev]
             prev = current_node.previous
         return [origin] + path[::-1] + [end]
 
+class WeightedGraph:
+    def __init__(self, weight_dict):
+        self.dict = weight_dict
+        self.nodes = {}
+        for edge in self.dict: # Appends all nodes
+            origin = edge[0]
+            end = edge[1]
+            self.nodes[origin] = Node(origin)
+            self.nodes[end] = Node(end)
+        
+        for edge in self.dict: # Adds all children and parents
+            origin = edge[0]
+            end = edge[1]
+            self.nodes[origin].addchild(end)
+            self.nodes[end].addparent(origin)
+        
+    
+    def calc_distance(self, origin, end):
+
+        visited = {} # children visited, distance must now be fixed
+        for nodeid in self.nodes:
+            self.nodes[nodeid].distance = 9999999
+        self.nodes[origin].distance = 0
+        current_node = self.nodes[origin]
+        # for n in self.nodes:
+        #     print(n, ":", self.nodes[n].getchildren(), ":", self.nodes[n].distance)
+        # print("------")
+        while end not in visited:
+            # for n in self.nodes:
+            #     print(n, ":", self.nodes[n].getchildren(), ":", self.nodes[n].distance)
+            # print("------")
+            for childid in current_node.getchildren():
+                child = self.nodes[childid]
+                edge = (current_node.id, child.id)
+                wt = self.dict[edge]
+                child.distance = min(child.distance, current_node.distance + wt)
+                # print current node and current node dist and wt
+                # print("current node:", current_node.id, "current node dist:", current_node.distance, "wt:", wt)
+                # print("child", child.id, "distance", child.distance)
+
+            visited[current_node.id] = True
+
+            min_viewed = {"node": None, "dist": 9999999}
+            for node in self.nodes:
+                if self.nodes[node].distance <= min_viewed["dist"] and node not in visited:
+                    min_viewed["node"] = node
+                    min_viewed["dist"] = self.nodes[node].distance
+            if min_viewed["node"] == None:
+                break
+            current_node = self.nodes[min_viewed["node"]]
+
+        return self.nodes[end].distance
+    
+    def shortest_path(self, origin, end):
+        self.calc_distance(origin, end)
+        reduced = []
+        for edge in self.dict:
+            wt = self.dict[edge]
+            nodea = self.nodes[edge[0]]
+            nodeb = self.nodes[edge[1]]
+            if nodea.distance - nodeb.distance == wt:
+                reduced.append(edge[::-1])
+        unweighted = Graph(reduced)
+        # print(unweighted.edges)
+        # print(origin, end)
+        return unweighted.shortest_path(origin, end)
+        
+        
+
+weights = {
+    (0,1): 3, (1,0): 3,
+    (1,7): 4, (7,1): 4,
+    (7,2): 2, (2,7): 2,
+    (2,5): 1, (5,2): 1,
+    (5,6): 8, (6,5): 8,
+    (0,3): 2, (3,0): 2,
+    (3,2): 6, (2,3): 6,
+    (3,4): 1, (4,3): 1,
+    (4,8): 8, (8,4): 8,
+    (8,0): 4, (0,8): 4
+}   
+
+g = WeightedGraph(weights)
+print([g.calc_distance(8,n) for n in range(9)])
+print(g.shortest_path(8,6))
 
 
-edges = [
-    (0, 1), (0,2),
-    (1,3),
-    (2,3), (2,5),
-    (3,1), (3,4),
-    (6,5), (6,7),
-    (7,6), (7,8),
-    (8,9), (8,7),
-    (9,8)
-]
+# edges = [
+#     (0, 1), (0,2),
+#     (1,3),
+#     (2,3), (2,5),
+#     (3,1), (3,4),
+#     (6,5), (6,7),
+#     (7,6), (7,8),
+#     (8,9), (8,7),
+#     (9,8)
+# ]
 
-g = Graph(edges)
+# g = Graph(edges)
 
 
-print(g.calc_distance(0, 4))
-print(g.shortest_path(0, 4))
+# print(g.calc_distance(0, 4))
+# print(g.shortest_path(0, 4))
 # edges2 = [
 #     (0,1), (1,2), (2,3), (3,0)
 # ]

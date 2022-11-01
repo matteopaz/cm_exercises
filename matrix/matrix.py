@@ -404,7 +404,7 @@ class Matrix:
                     basis[i][j] = 0
         return basis
 
-    def colspace(self):
+    def img(self):
         basis = []
         rref = self.rref()
         for i in range(rref.cols):
