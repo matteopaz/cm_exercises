@@ -170,7 +170,20 @@ def rrefdet():
     else:
         print("Success on rrefdet")
     
-
+def LU():
+    m = Matrix(3,3)
+    m.set_raw([[2, -1, -2],
+       [-4, 6, 3],
+       [-4, -2, 8]])
+    lu = m.lu_decomp()
+    res = lu[0].matrix_multiply(lu[1])
+    if res.get_raw() != m.get_raw():
+        print("failed lu")
+        lu[0].display()
+        lu[1].display()
+        res.display()
+    else:
+        print("success on lu")
     
 rref()
 rrefdet()
@@ -179,14 +192,6 @@ add()
 transpose()
 multiply()
 det()
+LU()
 
-s = Matrix(4,4).set_raw([
-    [-1,6,5,3],
-    [0,-2,-2,1],
-    [3,2,5,1],
-    [0,0,0,0]
-
-])
-
-s.rref().display()
 

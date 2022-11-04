@@ -460,6 +460,44 @@ class Matrix:
             if row[:-1] == [0]*len(row[:-1]) and row[-1] != 0: # Inconsistent row
                 return False
         return True
+    
+    def lu_decomp(self):
+        if self.rows != self.cols:
+            raise Exception("LU factorization not defined: matrix not square")
+        lower = Matrix(self.rows, self.rows)
+        upper = Matrix(self.rows, self.rows)
+        n = self.rows
+    
+
+        for i in range(n):
+    
+            # Upper Triangular
+            for k in range(i, n):
+    
+                # Summation of L(i, j) * U(j, k)
+                sum = 0
+                for j in range(i):
+                    sum += (lower.get_el(i,j) * upper.get_el(j,k))
+    
+                # Evaluating U(i, k)
+                upper.set_el(self.get_el(i,k) - sum, i,k)
+    
+            # Lower Triangular
+            for k in range(i, n):
+                if (i == k):
+                    lower.set_el(1, i, i)  # Diagonal as 1
+                else:
+    
+                    # Summation of L(k, j) * U(j, i)
+                    sum = 0
+                    for j in range(i):
+                        sum += (lower.get_el(k,j) * upper.get_el(j,i))
+    
+                    # Evaluating L(k, i)
+                    LKI = (self.get_el(k,i) - sum) / upper.get_el(i,i)
+                    lower.set_el(LKI, k,i)
+        
+        return [lower, upper]
 
 
     # MATRIX DERIVATIVES END
@@ -498,3 +536,4 @@ class Matrix:
         print("\n")
         print("-")
         return self
+    
