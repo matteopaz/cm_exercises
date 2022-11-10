@@ -194,4 +194,18 @@ multiply()
 det()
 LU()
 
+# make a 3x3 with rank 3
+m = Matrix(2,2)
+m.set_raw([
+    [-1,1],
+    [2,-1]
+])
+n = Matrix(2,3)
+n.set_raw([
+    [3,-2,1],
+    [-4,4,-1]
+])
+
+m.aug_rref(n).display()
+
 

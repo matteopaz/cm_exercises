@@ -1,7 +1,3 @@
-from ast import IsNot
-from select import select
-
-
 class Matrix:
 
 
@@ -203,6 +199,18 @@ class Matrix:
                 continue
             new.set_col(self.get_col(i), current_col)
             current_col += 1
+        return new
+    
+    def slice(self, r1=0, r2=0, c1=0, c2=0):
+        if r2 == 0:
+            r2 = self.rows
+        if c2 == 0:
+            c2 = self.cols
+        
+        new = Matrix(r2 - r1, c2 - c1)
+        for r in range(r1, r2):
+            for c in range(c1, c2):
+                new.set_el(self.get_el(r, c), r - r1, c - c1)
         return new
 
     # ROW OPERATIONS END
@@ -498,8 +506,54 @@ class Matrix:
                     lower.set_el(LKI, k,i)
         
         return [lower, upper]
+    
+    def aug_rref(self, aug, full=False):
+        if self.rows != aug.rows:
+            raise Exception("Augmented matrix not defined: different number of rows")
+        
+        aug_matrix = Matrix(self.rows, self.cols + aug.cols)
+        dim = aug_matrix.get_dim()
+        for i in range(dim[1]):
+            if i < self.cols:
+                aug_matrix.set_col(self.get_col(i), i)
+            else:
+                aug_matrix.set_col(aug.get_col(i-self.cols), i)
 
+        row_index = 0
 
+        for cnum in range(self.cols):
+            col = aug_matrix.get_col(cnum)[row_index:] # only consider rows below current
+            piv_row_num = aug_matrix.get_pivot_element(col)
+
+            if piv_row_num != -1: #if pivot row exists
+                piv_row_num += row_index # get absolute row number, since we only considered rows below current
+                if piv_row_num != row_index:
+                    aug_matrix.switch_row(piv_row_num, row_index)
+
+                piv_row = aug_matrix.get_row(piv_row_num)
+                reduced_row = aug_matrix.array_reduce_row(piv_row)
+                aug_matrix.set_row(reduced_row, piv_row_num) # Reduce pivot row in place
+
+                piv_row = aug_matrix.get_row(piv_row_num) # new reduced pivot row
+    
+                for r in range(dim[0]):
+                    if r == piv_row_num:
+                        continue
+
+                    col = aug_matrix.get_col(cnum) # update column to current state
+
+                    leading_num = col[r] # leading number in row to be reduced
+                    if leading_num != 0:
+                        selected_row = aug_matrix.get_row(r)
+                        reducer = aug_matrix.array_multiple(-leading_num, piv_row)
+
+                        reduced_row = aug_matrix.array_add(selected_row, reducer)
+                        aug_matrix.set_row(reduced_row, r)
+                row_index += 1
+        aug_matrix.__clean_zeroes()
+        if full:
+            return aug_matrix
+        return aug_matrix.slice(c1=self.cols)
     # MATRIX DERIVATIVES END
         
         
@@ -536,4 +590,6 @@ class Matrix:
         print("\n")
         print("-")
         return self
-    
+
+
+
