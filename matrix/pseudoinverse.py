@@ -49,6 +49,23 @@ data7 = {
         ]),
     "sol": Matrix(3,1).set_col([0,-1,5], 0)
 }
+data8 = {
+    "co": Matrix(3,2).set_raw([
+        [3, 1],
+        [27, 1.4422],
+        [81, 1.5874]
+        ]),
+    "sol": Matrix(3,1).set_col([0,-1,5], 0)
+}
+data9 = {
+    "co": Matrix(4,2).set_raw([
+        [-18, 2],
+        [0, 2],
+        [3, 4],
+        [100, 512]
+        ]),
+    "sol": Matrix(4,1).set_col([-3,-4,2,3], 0)
+}
 
 bestfit1 = data1["co"].pseudoinverse().matrix_multiply(data1["sol"])
 bestfit2 = data2["co"].pseudoinverse().matrix_multiply(data2["sol"])
@@ -57,6 +74,8 @@ bestfit4 = data4["co"].pseudoinverse().matrix_multiply(data4["sol"])
 bestfit5 = data5["co"].pseudoinverse().matrix_multiply(data5["sol"])
 bestfit6 = data6["co"].pseudoinverse().matrix_multiply(data6["sol"])
 bestfit7 = data7["co"].pseudoinverse().matrix_multiply(data7["sol"])
+bestfit8 = data8["co"].pseudoinverse().matrix_multiply(data8["sol"])
+bestfit9 = data9["co"].pseudoinverse().matrix_multiply(data9["sol"])
 
 # plot a line with m and b as variables and a range variable
 def plot_line(m, b, range, pts):
@@ -94,20 +113,33 @@ def plot_cubic(a, b, c, d, range, pts):
 # plot_quadratic(bestfit4.get_el(0,0), bestfit4.get_el(1,0), bestfit4.get_el(2,0), range(-10, 10), [[-3,-4], [-2,3], [1,0], [3,-1], [4,5]])
 # plot_cubic(bestfit5.get_el(0,0), bestfit5.get_el(1,0), bestfit5.get_el(2,0), bestfit5.get_el(3,0), range(-7, 7), [[-3,-4], [-2,3], [1,0], [3,-1], [4,5]])
 
-x6 = [0.2*u + 0.2 for u in range(0, 50)]
-y6 = [bestfit6.get_el(0,0)*math.log(u + 1) + bestfit6.get_el(1,0) / u for u in x6]
-pts6 = [(1,0), (3,-1), (4,5)]
+# x6 = [0.2*u + 0.2 for u in range(0, 50)]
+# y6 = [bestfit6.get_el(0,0)*math.log(u + 1) + bestfit6.get_el(1,0) / u for u in x6]
+# pts6 = [(1,0), (3,-1), (4,5)]
 
-for pt in pts6:
-    plt.plot(pt[0], pt[1], 'ro')
-plt.plot(x6, y6)
-plt.show()
+# for pt in pts6:
+#     plt.plot(pt[0], pt[1], 'ro')
+# plt.plot(x6, y6)
+# plt.show()
 
-x7 = [0.2*u + 0.2 for u in range(0, 50)]
-y7 = [bestfit7.get_el(0,0)*u + bestfit7.get_el(1,0) / u for u in x7]
-pts7 = [(1,0), (3,-1), (4,5)]
+# x7 = [0.2*u + 0.2 for u in range(0, 50)]
+# y7 = [(bestfit7.get_el(0,0)*u + bestfit7.get_el(1,0)) / (2**u) for u in x7]
+# pts7 = [(1,0), (3,-1), (4,5)]
 
-for pt in pts7:
-    plt.plot(pt[0], pt[1], 'ro')
-plt.plot(x7, y7)
-plt.show()
+# for pt in pts7:
+#     plt.plot(pt[0], pt[1], 'ro')
+# plt.plot(x7, y7)
+# plt.show()
+
+# x8 = [0.2*u + 0.2 for u in range(0, 30)]
+# y8 = [bestfit8.get_el(0,0)*3**u + bestfit8.get_el(1,0)*u**(1 / 3) for u in x8]
+# pts8 = [(1,0), (3,-1), (4,5)]
+
+# for pt in pts8:
+#     plt.plot(pt[0], pt[1], 'ro')
+# plt.plot(x8, y8)
+# plt.show()
+
+# x9 = [0.2*u + 0.2 for u in range(0, 30)]
+# y9 = [bestfit9.get_el(0,0)*u**3 + bestfit9.get_el(1,0)*u**2 + bestfit9.get_el(2,0)*u + bestfit9.get_el(3,0) for u in x9]
+# print(bestfit9.get_el(0,0), bestfit9.get_el(1,0))
