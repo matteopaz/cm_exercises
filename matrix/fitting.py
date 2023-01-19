@@ -1,5 +1,6 @@
 from matrix import Matrix
 import matplotlib.pyplot as plt
+import math
 class Polynomial:
     def __init__(self, order, coeffs):
         if len(coeffs) != order + 1:
@@ -176,7 +177,98 @@ def bestpolyfit(data):
     order = bestorder(data)
     return polyfit(data, order)
 
-fit = bestpolyfit(data)
-fitgraph(data, len(fit) - 1, fit)
+# fit = bestpolyfit(data)
+# fitgraph(data, len(fit) - 1, fit)
 
+
+# data:
+#[
+# [(x1, x2, x3, ...), y1],
+# ...
+# ]
+
+# fs: list of functions corresponding to coefficients
+def pseudoinverse(y, fs, data):
+    h = len(data)
+    paramn = len(fs)
+    datam = Matrix(h, 2).set_raw(data)
+
+    sol = Matrix(h, 1).set_col([y(ypt) for ypt in datam.get_col(1)], 0)
+    inputs = datam.get_col(0)
+    coeff = Matrix(h, paramn)
+    for r in range(h):
+        for c in range(paramn):
+            coeff.set_el(fs[c](inputs[r]), r, c)
+    bestfit = coeff.pseudoinverse().matrix_multiply(sol)
+    return bestfit.get_col(0)
+    
+def generalfit(fs, bestfit, data, xmin=0, xmax=10, res=100):
+    for pt in data:
+        plt.plot(pt[0], pt[1], "r.")
+    
+    x = [xpt / res for xpt in range(xmin*res, xmax*res)]
+    def eval(x):
+        sum = 0
+        for i in range(len(fs)):
+            sum += bestfit[i] * fs[i](x)
+        return sum
+    
+    y = [eval(xpt) for xpt in x]
+    print(x,y)
+    plt.plot(x, y)
+    # plt.show()
+
+data = [(1, 0.2), (2, 0.3), (3, 0.5)]
+fs1 = [lambda x: 1, lambda x: math.log(x)]
+yfn1 = lambda x: math.log(x)
+fit1 = pseudoinverse(yfn1, fs1, data)
+
+# x1 = [xpt / 100 for xpt in range(1, 1000)]
+# y1 = [math.exp(fit1[0]) * xpt**fit1[1] for xpt in x1]
+# for pt in data:
+#     plt.plot(pt[0], pt[1], "r.")
+# plt.plot(x1, y1)
+# plt.show()
+
+
+fs2 = [lambda x: 1, lambda x: x]
+yfn2 = lambda x: math.log(x)
+fit2 = pseudoinverse(yfn2, fs2, data)
+
+# x2 = [xpt / 100 for xpt in range(1, 1000)]
+# y2 = [math.exp(fit2[0] + xpt * fit2[1]) for xpt in x2]
+# for pt in data:
+#     plt.plot(pt[0], pt[1], "r.")
+# plt.plot(x2, y2)
+# plt.show()
+
+fs3 = [lambda x: x, lambda x: 1]
+yfn3 = lambda x: -math.log((1/x) - 1)
+fit3 = pseudoinverse(yfn3, fs3, data)
+
+# x3 = [xpt / 100 for xpt in range(1, 1000)]
+# y3 = [1 / (1 + math.exp(-(fit3[0] * xpt + fit3[1]))) for xpt in x3]
+# for pt in data:
+#     plt.plot(pt[0], pt[1], "r.")
+# plt.plot(x3, y3)
+# plt.show()
+
+# data2 = [(1, 2), (2, 3), (3, 5)] 
+# fs4 = fs3
+# yfn4 = lambda x: -math.log((10 / (x - 0.5)) - 1)
+# fit4 = pseudoinverse(yfn4, fs4, data2)
+
+# x4 = [xpt / 100 for xpt in range(1, 1000)]
+# y4 = [10 / (1 + math.exp(-(fit4[0] * xpt + fit4[1]))) + 0.5 for xpt in x4]
+# for pt in data2:
+#     plt.plot(pt[0], pt[1], "r.")
+
+# plt.plot(x4, y4)
+# plt.show()
+
+data = [(0,5), (1, 7.5), (2,8), (3,8.3)]
+yfn = lambda x: -math.log(10 / (x) - 1)
+fs = [lambda x: x, lambda x: 1]
+fit = pseudoinverse(yfn, fs, data)
+print(fit)
         

@@ -66,16 +66,26 @@ data9 = {
         ]),
     "sol": Matrix(4,1).set_col([-3,-4,2,3], 0)
 }
+data10 = {
+    "co": Matrix(4,2).set_raw([
+        [0,1],
+        [1,1],
+        [2,1],
+        [3,1]
+        ]),
+    "sol": Matrix(4,1).set_col([5,7.5,8,8.3], 0)
+}
 
-bestfit1 = data1["co"].pseudoinverse().matrix_multiply(data1["sol"])
-bestfit2 = data2["co"].pseudoinverse().matrix_multiply(data2["sol"])
-bestfit3 = data3["co"].pseudoinverse().matrix_multiply(data3["sol"])
-bestfit4 = data4["co"].pseudoinverse().matrix_multiply(data4["sol"])
-bestfit5 = data5["co"].pseudoinverse().matrix_multiply(data5["sol"])
-bestfit6 = data6["co"].pseudoinverse().matrix_multiply(data6["sol"])
-bestfit7 = data7["co"].pseudoinverse().matrix_multiply(data7["sol"])
-bestfit8 = data8["co"].pseudoinverse().matrix_multiply(data8["sol"])
-bestfit9 = data9["co"].pseudoinverse().matrix_multiply(data9["sol"])
+# bestfit1 = data1["co"].pseudoinverse().matrix_multiply(data1["sol"])
+# bestfit2 = data2["co"].pseudoinverse().matrix_multiply(data2["sol"])
+# bestfit3 = data3["co"].pseudoinverse().matrix_multiply(data3["sol"])
+# bestfit4 = data4["co"].pseudoinverse().matrix_multiply(data4["sol"])
+# bestfit5 = data5["co"].pseudoinverse().matrix_multiply(data5["sol"])
+# bestfit6 = data6["co"].pseudoinverse().matrix_multiply(data6["sol"])
+# bestfit7 = data7["co"].pseudoinverse().matrix_multiply(data7["sol"])
+# bestfit8 = data8["co"].pseudoinverse().matrix_multiply(data8["sol"])
+# bestfit9 = data9["co"].pseudoinverse().matrix_multiply(data9["sol"])
+bestfit10 = data10["co"].pseudoinverse().matrix_multiply(data10["sol"])
 
 # plot a line with m and b as variables and a range variable
 def plot_line(m, b, range, pts):
@@ -143,3 +153,11 @@ def plot_cubic(a, b, c, d, range, pts):
 # x9 = [0.2*u + 0.2 for u in range(0, 30)]
 # y9 = [bestfit9.get_el(0,0)*u**3 + bestfit9.get_el(1,0)*u**2 + bestfit9.get_el(2,0)*u + bestfit9.get_el(3,0) for u in x9]
 # print(bestfit9.get_el(0,0), bestfit9.get_el(1,0))
+
+pts9 = [(0,5), (1,7.5),(2,8),(3,8.3)]
+bestfit10.display()
+
+for pt in pts9:
+    plt.plot(pt[0], pt[1], 'ro')
+plot_line(bestfit10.get_el(0,0), bestfit10.get_el(1,0), range(-10, 10), pts9)
+plt.show()

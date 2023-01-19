@@ -195,17 +195,14 @@ det()
 LU()
 
 # make a 3x3 with rank 3
-m = Matrix(2,2)
-m.set_raw([
-    [-1,1],
-    [2,-1]
-])
-n = Matrix(2,3)
-n.set_raw([
-    [3,-2,1],
-    [-4,4,-1]
+m = Matrix(2,1).set_raw([
+    [4],
+    [5]
 ])
 
-m.aug_rref(n).display()
+n = Matrix(2,2).set_raw([
+    [7,4],
+    [12,7]
+])
 
-
+n.inverse().matrix_multiply(m).display()

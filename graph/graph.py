@@ -241,7 +241,15 @@ g = WeightedGraph(weights)
 print([g.calc_distance(8,n) for n in range(9)])
 print(g.shortest_path(8,6))
 
-
+edges = [
+    # make a 3 cycle
+    (0,1), (1,2), (2,0),
+]
+g = Graph(edges)
+b = g.get_ids_breadth_first(0)
+d = g.get_ids_depth_first(0)
+print(b)
+print(d)
 # edges = [
 #     (0, 1), (0,2),
 #     (1,3),
