@@ -509,43 +509,6 @@ class Matrix:
         
         return [lower, upper]
     
-    def elemwise_mult(self, other):
-        if self.get_dim() != other.get_dim():
-            raise Exception("Element-wise multiplication not defined: different dimensions")
-        newMatrix = Matrix(self.rows, self.cols)
-        for i in range(self.rows):
-            for j in range(self.cols):
-                newMatrix.set_el(self.get_el(i,j)*other.get_el(i,j), i, j)
-        return newMatrix
-    
-    def append_matrix(self, other):
-        if self.rows != other.rows:
-            raise Exception("Append not defined: different number of rows")
-        newMatrix = Matrix(self.rows, self.cols + other.cols)
-        for i in range(self.rows):
-            for j in range(self.cols):
-                newMatrix.set_el(self.get_el(i,j), i, j)
-            for j in range(other.cols):
-                newMatrix.set_el(other.get_el(i,j), i, j+self.cols)
-        return newMatrix
-    
-    def append_row(self, row, index=0):
-        # insert row at row index
-        if len(row) != self.cols:
-            raise Exception("Append not defined: row length does not match matrix width")
-        newMatrix = Matrix(self.rows+1, self.cols)
-        for i in range(self.rows+1):
-            if i < index:
-                for j in range(self.cols):
-                    newMatrix.set_el(self.get_el(i,j), i, j)
-            elif i == index:
-                for j in range(self.cols):
-                    newMatrix.set_el(row[j], i, j)
-            else:
-                for j in range(self.cols):
-                    newMatrix.set_el(self.get_el(i-1,j), i, j)
-        return newMatrix
-
     def aug_rref(self, aug, full=False):
         if self.rows != aug.rows:
             raise Exception("Augmented matrix not defined: different number of rows")
@@ -593,59 +556,6 @@ class Matrix:
         if full:
             return aug_matrix
         return aug_matrix.slice(c1=self.cols)
-    
-    def __getbiggestslope(coeffs, num_maximizers):
-        slopes = []
-        for i in range(num_maximizers):
-            slopes.append(coeffs.get_el(0,i))
-        if max(slopes) < 0.00001:
-            return -1
-        return slopes.index(max(slopes))
-
-    def simplex(coeffs, constraint_constants):
-        num_maximizers = len(coeffs.get_row(0))
-        biggest_slope = Matrix.__getbiggestslope(coeffs, num_maximizers)
-        id = Matrix(coeffs.rows - 1, coeffs.rows - 1)
-        id.set_diag([1 for i in range(id.cols)], 1)
-        adjid = id.append_row([0 for i in range(id.cols)], 0)
-        fullm = coeffs.append_matrix(adjid)
-        while biggest_slope != -1:
-            slopes = coeffs.get_col(biggest_slope)
-            colv = Matrix(len(slopes), 1).set_col(list(map(lambda x: 1/x, slopes)), 0)
-
-            ratios = constraint_constants.elemwise_mult(colv)
-            ratios.__clean_zeroes()
-            ratios = ratios.get_col(0)[1:]
-            reducingrownum = ratios.index(min(ratios)) + 1
-            reducingrow = fullm.get_row(reducingrownum)
-            elementofinterest = reducingrow[biggest_slope]
-            reducingrow = list(map(lambda x: x/elementofinterest, reducingrow))
-            fullm.set_row(reducingrow, reducingrownum)
-            constraint_constants.set_el(constraint_constants.get_el(reducingrownum, 0) / elementofinterest, reducingrownum, 0)
-            for i in range(fullm.rows):
-                if i == reducingrownum:
-                    continue
-                row = fullm.get_row(i)
-                elementofinterest = row[biggest_slope]
-                row = Matrix.array_add(fullm, row, Matrix.array_multiple(fullm, -elementofinterest, reducingrow))
-                reducerelem = constraint_constants.get_el(i, 0)
-                constraint_constants.set_el(reducerelem - elementofinterest * constraint_constants.get_el(reducingrownum, 0), i, 0)
-                fullm.set_row(row, i)
-            
-            biggest_slope = Matrix.__getbiggestslope(fullm, num_maximizers)
-            fullm.display()
-        return -constraint_constants.get_el(0,0)
-        
-            
-
-
-
-    
-
-
-
-            
-
     # MATRIX DERIVATIVES END
         
         
@@ -682,4 +592,6 @@ class Matrix:
         print("\n")
         print("-")
         return self
-    
+
+
+

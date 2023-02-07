@@ -195,14 +195,27 @@ det()
 LU()
 
 # make a 3x3 with rank 3
-m = Matrix(2,1).set_raw([
-    [4],
-    [5]
+# m = Matrix(4,4).set_raw([
+#     [1,2,1,-1],
+#     [0,-1,2,1],
+#     [2,-1,1,1],
+#     [0,0,-11,-2]
+# ])
+# n = Matrix(4,1).set_raw([
+#     [1],
+#     [-2],
+#     [3],
+#     [5]
+# ])
+# m.inverse().matrix_multiply(n)
+
+coeff = Matrix(4,3).set_raw([
+    [1,2,1],
+    [2,1,1],
+    [4,2,3],
+    [2,5,5]
 ])
 
-n = Matrix(2,2).set_raw([
-    [7,4],
-    [12,7]
-])
+const = Matrix(4,1).set_col([0,14,28,30],0)
 
-n.inverse().matrix_multiply(m).display()
+print(Matrix.simplex(coeff, const))
